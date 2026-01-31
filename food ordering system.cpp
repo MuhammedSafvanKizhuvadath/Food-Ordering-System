@@ -155,3 +155,72 @@ public:
 
             if(c==1){
                 MenuItem m;
+                cout<<"ID:";Input::read(m.id);
+                cout<<"Name:";m.name=Input::readLine();
+                cout<<"Price:";Input::read(m.price);
+                cout<<"Stock:";Input::read(m.stock);
+                cout<<"Prep:";Input::read(m.prepTime);
+                repo.add(m);
+            }
+
+            if(c>=2&&c<=4){
+                repo.display();
+                int id; cout<<"ID:";Input::read(id);
+                auto* it=repo.find(id);
+                if(!it) continue;
+                if(c==2) Input::read(it->price);
+                if(c==3) Input::read(it->stock);
+                if(c==4) Input::read(it->prepTime);
+            }
+
+            if(c==5) repo.display();
+
+            if(c!=0){ cout<<"\nEnter...";cin.get();cin.get(); }
+
+        }while(c!=0);
+    }
+};
+
+int main(){
+
+    MenuRepository repo;
+
+    repo.add({1,"Pizza",8.99,10,15});
+    repo.add({2,"Burger",4.99,20,10});
+    repo.add({3,"Pasta",6.49,15,12});
+    repo.add({4,"Fries",2.99,25,5});
+    repo.add({5,"Nuggets",3.49,18,7});
+
+    OrderService orders(repo);
+    ManagerUI manager(repo);
+
+    int u;
+
+    do{
+        clearScreen();
+        cout<<"\n1 Manager\n2 Customer\n0 Exit\nChoice:";
+        if(!Input::read(u)) continue;
+
+        if(u==1) manager.panel();
+
+        if(u==2){
+            char m='y';
+            while(m=='y'||m=='Y'){
+                repo.display();
+                int id,q;
+                cout<<"ID:";Input::read(id);
+                cout<<"Qty:";Input::read(q);
+                if(!orders.tryOrder(id,q)) cout<<"Failed\n";
+                cout<<"More?(y/n):";cin>>m;
+            }
+            orders.receipt();
+            orders.popular();
+            orders.clear();
+            cout<<"\nEnter...";
+            cin.get();cin.get();
+        }
+
+    }while(u!=0);
+
+    return 0;
+}
